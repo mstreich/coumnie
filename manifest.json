@@ -2,6 +2,24 @@
   "name": "Co u Mnie",
   "short_name": "cm",
   "description": "Simple application that displays my recent Instagram photos connected to YouTube music background.",
+  "icons": [
+    {
+      "src": "/src/images/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/src/images/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/src/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
   "start_url": "/",
-  "display": "standalone"
+  "display": "standalone",
+  "orientation": "landscape"
 }
