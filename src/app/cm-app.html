@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
 <link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 
@@ -18,6 +20,9 @@
 
 		</style>
 
+		<app-location route="{{route}}"></app-location>
+		<app-route route="{{route}}" pattern="/:page" data="{{routeData}}"></app-route>
+
 		<iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
 			<cm-about-view name="about"></cm-about-view>
 			<cm-photos-view name="photos"></cm-photos-view>
@@ -36,26 +41,41 @@
 			Polymer.AppLocalizeBehavior
 		], Polymer.Element) {
 
-			static get is() { return 'cm-app'; }
+			static get is () { return 'cm-app'; }
 
-			static get properties() {
+			static get properties () {
 
 				return {
 
 					page: {
-						value: 'aboutttt'
+						type: String
+					},
+
+					routeData: {
+						type: Object,
+						observer: '_routeDataChanged'
 					},
 
 					language: {
+						type: String,
 						value: 'pl'
+					},
+
+					_defaultPage: {
+						type: String,
+						value: 'photos'
 					}
 
 				};
 			}
 
-			constructor() {
+			constructor () {
 				super();
 				this.loadResources(this.resolveUrl('../lang/locales.json'));
+			}
+
+			_routeDataChanged (routeData) {
+				this.set('page', !!(!routeData || !routeData.page || routeData.page === '') ? this._defaultPage : routeData.page);
 			}
 
 		}
