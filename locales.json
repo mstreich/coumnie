@@ -1,8 +1,0 @@
-{
-    "en": {
-        "hello": "My name is {name}."
-    },
-    "pl": {
-        "hello": "Mam na imię {name}."
-    }
-}

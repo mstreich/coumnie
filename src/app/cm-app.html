@@ -11,7 +11,7 @@
 			}
 		</style>
 		
-		<h2>{{localize('hello', 'name', 'Marek')}}</h2>
+		<h2>{{localize('myNameIsShort', 'name', 'Marek')}}</h2>
 	
 	</template>
 
@@ -40,7 +40,7 @@
 
 			constructor() {
 				super();
-				this.loadResources(this.resolveUrl('../../locales.json'));
+				this.loadResources(this.resolveUrl('../lang/locales.json'));
 			}
 
 		}

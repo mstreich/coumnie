@@ -4,5 +4,8 @@ bower_components/
 # Installed components via npm
 node_modules/
 
+# Build folder
+build/
+
 # Visual Studio Code config
 .vscode/

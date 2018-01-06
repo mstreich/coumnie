@@ -1,0 +1,8 @@
+{
+    "en": {
+        "myNameIsShort": "My name is {name}."
+    },
+    "pl": {
+        "myNameIsShort": "Mam na imię {name}."
+    }
+}
