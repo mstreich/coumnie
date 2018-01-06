@@ -42,9 +42,9 @@
             }
 
             .background {
-                -webkit-filter: grayscale(100%)  blur(5px);
-                filter: grayscale(100%) blur(5px);
-                transform: scale(1.1);
+                -webkit-filter: grayscale(100%)  blur(4px);
+                filter: grayscale(100%) blur(4px);
+                transform: scale(1.05);
             }
 
             .gradient {
@@ -88,15 +88,30 @@
 
             .controlls {
                 position: absolute;
-                top: 50%;
-                width: calc(var(--photo-size) * .5);
-                height: var(--photo-size);
-                left: 50%;
-                margin: calc(var(--photo-size) * -.5) 0 0 calc(var(--photo-size) * -1);
                 --color: #fff;
                 --color-hover: #fff;
                 --background: var(--color-1);
                 --background-hover: var(--color-2);
+            }
+
+            @media screen and (orientation: landscape) {
+                .controlls {
+                    top: 50%;
+                    width: calc(var(--photo-size) * .5);
+                    height: var(--photo-size);
+                    left: 50%;
+                    margin: calc(var(--photo-size) * -.5) 0 0 calc(var(--photo-size) * -1);
+                }
+            }
+
+            @media screen and (orientation: portrait) {
+                .controlls {
+                    height: calc(var(--photo-size) * .25);
+                    width: var(--photo-size);
+                    bottom: 50%;
+                    left: 50%;
+                    margin: 0 0 calc(var(--photo-size) * -0.75) calc(var(--photo-size) * -.5);
+                }
             }
 
             /* Player */
@@ -140,7 +155,7 @@
 
                 <cm-player-controls
                     class="controlls"
-                    playing="[[_playing]]"
+                    state="[[_state]]"
                     on-play="_onPlay"
                     on-pause="_onPause"
                 ></cm-player-controls>
@@ -149,7 +164,7 @@
                     id="player"
                     class="player"
                     youtube-url="[[_youtubeUrl]]"
-                    playing="{{_playing}}"
+                    state="{{_state}}"
                 ></cm-player>
 
             </template>
@@ -178,8 +193,8 @@
                         type: String
                     },
 
-                    _playing: {
-                        type: Boolean
+                    _state: {
+                        type: Number
                     },
 
                     _withPlayer: {
