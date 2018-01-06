@@ -1,0 +1,7 @@
+{
+  "name": "cm",
+  "short_name": "cm",
+  "description": "Simple application that displays my recent Instagram photos connected to YouTube music background.",
+  "start_url": "/",
+  "display": "standalone"
+}
