@@ -1,5 +1,8 @@
-#Installed components via bower
+# Installed components via bower
 bower_components/
 
-#Installed components via npm
+# Installed components via npm
 node_modules/
+
+# Visual Studio Code config
+.vscode/
