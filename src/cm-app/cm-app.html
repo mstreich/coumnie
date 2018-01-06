@@ -1,32 +1,58 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <dom-module id="cm-app">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]!</h2>
-  </template>
 
-  <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class CmApp extends Polymer.Element {
-      static get is() { return 'cm-app'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'cm-app'
-          }
-        };
-      }
-    }
+	<template>
 
-    window.customElements.define(CmApp.is, CmApp);
-  </script>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		
+		<h2>Hello [[prop1]]!</h2>
+	
+	</template>
+
+	<script>
+
+		/**
+		 * @customElement
+		 * @polymer
+		 */
+		class CmApp extends Polymer.Element {
+
+			static get is() { return 'cm-app'; }
+
+			static get properties() {
+
+				return {
+
+					prop1: {
+						type: String,
+						value: 'cm-app'
+					},
+
+					language: {
+						value: 'en'
+					},
+
+					resources: {
+						value() {
+							return {
+								'en': { 'hello': 'My name is {name}.' },
+								'fr': { 'hello': 'Je m\'apelle {name}.' }
+							}
+						}
+					}
+
+				};
+			}
+
+		}
+
+		window.customElements.define(CmApp.is, CmApp);
+
+	</script>
+
 </dom-module>

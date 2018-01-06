@@ -3,18 +3,31 @@
   "version": "1.0.0",
   "description": "Simple application that displays my recent Instagram photos connected to YouTube music background.",
   "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "dev": "polymer serve --open",
-    "build": "polymer build --preset es5-bundled && firebase deploy"
+    "dev": "polymer serve --open | npm run watch",
+    "test": "polymer test",
+    "build": "polymer build --preset es5-bundled && firebase deploy",
+    "watch": "browser-sync start --proxy localhost:8081 --files \"src/**/*.*, index.html, *.js\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mstreich/coumnie.git"
   },
+  "keywords": [
+    "instagram",
+    "youtube",
+    "polymer"
+  ],
   "author": "Marek Streich",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mstreich/coumnie/issues"
   },
-  "homepage": "https://github.com/mstreich/coumnie#readme"
+  "homepage": "https://github.com/mstreich/coumnie#readme",
+  "devDependencies": {
+    "browser-sync": "^2.23.3"
+  }
 }
