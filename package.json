@@ -4,7 +4,7 @@
   "description": "Simple application that displays my recent Instagram photos connected to YouTube music background.",
   "main": "index.html",
   "scripts": {
-    "dev": "polymer serve",
+    "dev": "polymer serve --open",
     "build": "polymer build --preset es5-bundled && firebase deploy"
   },
   "repository": {
