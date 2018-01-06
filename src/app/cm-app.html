@@ -1,17 +1,28 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="pages/cm-about-view/cm-about-view.html">
+<link rel="import" href="pages/cm-photos-view/cm-photos-view.html">
+<link rel="import" href="pages/cm-404-view/cm-404-view.html">
 
 <dom-module id="cm-app">
 
 	<template>
 
 		<style>
+
 			:host {
 				display: block;
 			}
+
 		</style>
-		
-		<h2>{{localize('myNameIsShort', 'name', 'Marek')}}</h2>
+
+		<iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
+			<cm-about-view name="about"></cm-about-view>
+			<cm-photos-view name="photos"></cm-photos-view>
+			<cm-404-view name="404"></cm-404-view>
+		</iron-pages>
 	
 	</template>
 
@@ -30,6 +41,10 @@
 			static get properties() {
 
 				return {
+
+					page: {
+						value: 'aboutttt'
+					},
 
 					language: {
 						value: 'pl'
