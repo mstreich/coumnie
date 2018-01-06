@@ -1,0 +1,20 @@
+{
+  "name": "cm",
+  "version": "1.0.0",
+  "description": "Simple application that displays my recent Instagram photos connected to YouTube music background.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "polymer serve",
+    "deploy": "polymer build --preset es5-bundled && firebase deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mstreich/coumnie.git"
+  },
+  "author": "Marek Streich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mstreich/coumnie/issues"
+  },
+  "homepage": "https://github.com/mstreich/coumnie#readme"
+}

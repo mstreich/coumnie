@@ -1,3 +1,5 @@
 #Installed components via bower
 bower_components/
-build/
+
+#Installed components via npm
+node_modules/
