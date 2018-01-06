@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "polymer serve",
-    "deploy": "polymer build --preset es5-bundled && firebase deploy"
+    "build": "polymer build --preset es5-bundled && firebase deploy"
   },
   "repository": {
     "type": "git",
