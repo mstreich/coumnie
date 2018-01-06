@@ -1,0 +1,161 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../../bower_components/google-youtube/google-youtube.html">
+
+<dom-module id="cm-player">
+
+	<template>
+
+		<style>
+
+            :host {
+
+                --color: #ffffff;
+                --width: 0%;
+                --size: 3px;
+
+                position: relative;
+                width: 100%;
+                height: var(--size);
+
+            }
+
+            :host .playback {
+                position: absolute;
+                top: 0;
+                width: var(--width);
+                height: 0%;
+                left: 0;
+                background: var(--color);
+                transition: width 1s linear, height 0.2s ease-in;
+            }
+
+            :host([playing]) .playback {
+                height: 100%;
+                transition: width 1s linear, height 0.2s ease-out 1.2s;
+            }
+
+            [hidden] {
+                display: none !important;
+            }
+
+        </style>
+
+        <template is="dom-if" if="[[_showPlayer]]">
+            <google-youtube
+                chromeless
+                id="player"
+                video-id="[[_youtubeId]]"
+                height="0"
+                width="0"
+                start="15"
+                state="{{_state}}"
+                duration="{{_duration}}"
+                currenttime="{{_currenttime}}"
+            ></google-youtube>
+        </template>
+
+        <div class="playback"></div>
+
+	</template>
+
+	<script>
+
+		class CmPlayer extends Polymer.Element {
+
+			static get is() { return 'cm-player'; }
+
+			static get properties () {
+
+				return {
+
+                    // PUBLIC
+
+                    youtubeUrl: {
+                        type: String
+                    },
+
+                    playing: {
+                        type: Boolean,
+                        readOnly: true,
+                        notify: true,
+                        reflectToAttribute: true,
+                        computed: '_computePlaying(_state)'
+                    },
+
+                    // PRIVATE
+
+                    _youtubeId: {
+                        type: String,
+                        computed: '_computeYoutubeId(youtubeUrl)'
+                    },
+
+                    _state: {
+                        type: Number
+                    },
+
+                    _duration: {
+                        type: Number
+                    },
+
+                    _currenttime: {
+                        type: Number
+                    },
+
+                    _percentage: {
+                        type: Number,
+                        computed: '_computePercentage(_currenttime, _duration)',
+                        observer: '_onPercentageChanged'
+                    },
+
+                    _showPlayer: {
+                        type: Boolean,
+                        computed: '_computeShowPlayer(_youtubeId)'
+                    }
+
+				};
+
+            }
+
+            // PUBLIC
+
+            play () {
+                this.shadowRoot.querySelector('#player').play();
+            }
+
+            pause () {
+                this.shadowRoot.querySelector('#player').pause();
+            }
+
+            // PRIVATE
+
+            _computeYoutubeId (youtubeUrl) {
+                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+                var match = youtubeUrl.match(regExp);
+                return (match && match[7].length === 11) ? match[7] : null;
+            }
+
+            _computePlaying (_state) {
+                return _state === 1 || _state === 3;
+            }
+
+            _computePercentage (_currenttime, _duration) {
+                return _currenttime / _duration * 100;
+            }
+
+            _computeShowPlayer (_youtubeId) {
+                return !!(_youtubeId && _youtubeId.length);
+            }
+
+            _onPercentageChanged (_percentage) {
+                this.updateStyles({
+                    '--width': _percentage + '%'
+                });
+            }
+
+		}
+		
+		customElements.define(CmPlayer.is, CmPlayer);
+
+	</script>
+
+</dom-module>

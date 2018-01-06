@@ -1,5 +1,6 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../components/cm-photo/cm-photo.html">
 
 <dom-module id="cm-photos-view">
 
@@ -7,16 +8,67 @@
 
 		<style>
 
+			:host {
+				@apply --layout-vertical;
+			}
+
+			.photo {
+				@apply --layout;
+				width: 100vw;
+				height: 100vh;
+			}
+
 		</style>
 
-		<div>photos</div>
+		<iron-ajax
+			auto
+			url="https://api.instagram.com/v1/users/7924113/media/recent/"
+			params='{"access_token":"7924113.7024836.afb88a9950b641c982694d41cd233183"}'
+			handle-as="json"
+			on-response="_onPhotosReceived"
+			debounce-duration="300"
+		></iron-ajax>
+
+		<div class="photos">
+			<template is="dom-repeat" items="[[photos]]">
+				<cm-photo photo="[[item]]" class="photo" on-pause-all="_onPauseAll"></cm-photo>
+			</template>
+		</div>
 
 	</template>
 
 	<script>
 
 		class CmPhotosView extends Polymer.Element {
+
 			static get is() { return 'cm-photos-view'; }
+
+			static get properties () {
+
+				return {
+
+					photos: {
+						type: Array
+					}
+
+				};
+
+			}
+
+			_onPhotosReceived (e, data) {
+				this.photos = data.response.data;
+			}
+
+			_onPauseAll (e) {
+
+				var photos = this.shadowRoot.querySelectorAll('.photo');
+				
+				for (var i = 0; i < photos.length; i++) {
+					photos[i].pause();
+				}
+
+			}
+
 		}
 		
 		customElements.define(CmPhotosView.is, CmPhotosView);

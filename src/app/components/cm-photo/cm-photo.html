@@ -1,0 +1,271 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../cm-player/cm-player.html">
+<link rel="import" href="../cm-player-controls/cm-player-controls.html">
+<script src="../../../../bower_components/color-thief/src/color-thief.js"></script>
+
+<dom-module id="cm-photo">
+
+	<template>
+
+		<style>
+
+            :host {
+
+                --color-size: 0px;
+                --photo-size: 40vh;
+                --player-size: 0px;
+
+                --gradient-angle: 135deg;
+                --color-1: rgba(93, 159, 194, 0.8);
+                --color-2: rgba(93, 159, 194, 0.8);
+                --color-3: rgba(93, 159, 194, 0.8);
+                --color-4: rgba(93, 159, 194, 0.8);
+
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* Photo */
+
+            .background, .gradient, .photo {
+                position: absolute;
+                background-size: cover;
+                background-position: center center;
+            }
+
+            .background, .gradient {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+
+            .background {
+                -webkit-filter: grayscale(100%)  blur(5px);
+                filter: grayscale(100%) blur(5px);
+                transform: scale(1.1);
+            }
+
+            .gradient {
+                background: var(--color-1);
+                background: -moz-linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
+                background: -webkit-linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
+                background: linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
+            }
+
+            .photo {
+                top: 50%;
+                width: var(--photo-size);
+                height: var(--photo-size);
+                left: 50%;
+                margin: calc(var(--photo-size) * -.5) 0px 0px calc(var(--photo-size) * -.5);
+                box-shadow: 0px 0px 25vh 5vh rgba(0, 0, 0, 0.5);
+            }
+
+            /* Colors */
+
+            .colors {
+                @apply --layout-horizontal;
+                position: absolute;
+                top: 0;
+                right: 0;
+                height: var(--color-size);
+                left: 0;
+            }
+
+            .color {
+                width: 25%;
+                height: 100%;
+            }
+
+            .color.c1 { background: var(--color-1); }
+            .color.c2 { background: var(--color-2); }
+            .color.c3 { background: var(--color-3); }
+            .color.c4 { background: var(--color-4); }
+
+            /* Controls */
+
+            .controlls {
+                position: absolute;
+                top: 50%;
+                width: calc(var(--photo-size) * .5);
+                height: var(--photo-size);
+                left: 50%;
+                margin: calc(var(--photo-size) * -.5) 0 0 calc(var(--photo-size) * -1);
+                --color: #fff;
+                --color-hover: #fff;
+                --background: var(--color-1);
+                --background-hover: var(--color-2);
+            }
+
+            /* Player */
+
+            .player {
+                position: absolute;
+                top: var(--color-size);
+                right: 0;
+                left: 0;
+                --size: var(--player-size);
+                --color: #fff;
+            }
+
+        </style>
+
+        <iron-ajax
+            id="getComments"
+            url="https://api.instagram.com/v1/media/[[photo.id]]/comments"
+            params='{"access_token":"7924113.7024836.afb88a9950b641c982694d41cd233183"}'
+            handle-as="json"
+            on-response="_onCommentsReceived"
+            debounce-duration="300"
+        ></iron-ajax>
+        
+        <template is="dom-if" if="[[photo.id]]">
+
+            <div class="background" style="background-image: url([[photo.images.standard_resolution.url]]);"></div>
+
+            <div class="gradient"></div>
+
+            <div class="photo" style="background-image: url([[photo.images.standard_resolution.url]]);"></div>
+
+            <div class="colors">
+                <div class="color c1"></div>
+                <div class="color c2"></div>
+                <div class="color c3"></div>
+                <div class="color c4"></div>
+            </div>
+
+            <template is="dom-if" if="[[_withPlayer]]">
+
+                <cm-player-controls
+                    class="controlls"
+                    playing="[[_playing]]"
+                    on-play="_onPlay"
+                    on-pause="_onPause"
+                ></cm-player-controls>
+
+                <cm-player
+                    id="player"
+                    class="player"
+                    youtube-url="[[_youtubeUrl]]"
+                    playing="{{_playing}}"
+                ></cm-player>
+
+            </template>
+
+        </template>
+
+	</template>
+
+	<script>
+
+		class CmPhoto extends Polymer.Element {
+
+			static get is() { return 'cm-photo'; }
+
+			static get properties () {
+
+				return {
+
+                    photo: {
+                        type: Object,
+                        value: function () { return {}; },
+                        observer: '_onPhoto'
+                    },
+
+                    _youtubeUrl: {
+                        type: String
+                    },
+
+                    _playing: {
+                        type: Boolean
+                    },
+
+                    _withPlayer: {
+                        type: Boolean,
+                        computed: '_computeWithPlayer(_youtubeUrl)',
+                        reflectToAttribute: true
+                    }
+
+				};
+
+            }
+
+            // PUBLIC
+
+            play () {
+                if (this._withPlayer) {
+                    this.shadowRoot.querySelector('#player').play();
+                }
+            }
+
+            pause () {
+                if (this._withPlayer) {
+                    this.shadowRoot.querySelector('#player').pause();
+                }
+            }
+
+            // PRIVATE
+            
+            _onPhoto (photo) {
+
+                var img = document.createElement('img');
+                img.crossOrigin = 'Anonymous';
+                img.onload = this._setColors.bind(this);
+                img.src = photo.images.standard_resolution.url;
+
+                if (photo.tags.includes('soundtrack')) {
+                    this.$.getComments.generateRequest();                    
+                }
+
+            }
+
+            _setColors (e) {
+
+                var colorThief = new ColorThief();
+                var p = colorThief.getPalette(e.target, 4);
+
+                if (p && p.length > 3) {
+                    this.updateStyles({
+                        '--gradient-angle': Math.floor(Math.random() * 360) + 'deg',
+                        '--color-1': 'rgba(' + p[0][0] + ', ' + p[0][1] + ', ' + p[0][2] + ', 0.8)',
+                        '--color-2': 'rgba(' + p[1][0] + ', ' + p[1][1] + ', ' + p[1][2] + ', 0.8)',
+                        '--color-3': 'rgba(' + p[2][0] + ', ' + p[2][1] + ', ' + p[2][2] + ', 0.8)',
+                        '--color-4': 'rgba(' + p[3][0] + ', ' + p[3][1] + ', ' + p[3][2] + ', 0.8)'
+                    });
+                }
+
+            }
+
+            _onCommentsReceived (e, data) {
+                data.response.data.forEach(comment => {
+                    if (comment.from.id === '7924113') {
+                        var urls = comment.text.match(/(https?:\/\/[^\s]+)/g);
+                        if (urls && urls.length) {
+                            this._youtubeUrl = urls[0];
+                        }
+                    }
+				});
+            }
+
+            _computeWithPlayer (_youtubeUrl) {
+                return !!(_youtubeUrl && _youtubeUrl.length);
+            }
+
+            _onPlay () {
+                this.dispatchEvent(new CustomEvent('pause-all'));
+                this.play();
+            }
+
+            _onPause () {
+                this.pause();
+            }
+
+		}
+		
+		customElements.define(CmPhoto.is, CmPhoto);
+
+	</script>
+
+</dom-module>
