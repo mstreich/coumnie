@@ -80,6 +80,7 @@
 
             .controlls {
                 position: absolute;
+                overflow: hidden;
                 --color: #fff;
                 --color-hover: #fff;
                 --background: var(--color-1);
@@ -87,23 +88,39 @@
             }
 
             @media screen and (orientation: landscape) {
+
                 .controlls {
                     top: 50%;
-                    width: calc(var(--photo-size) * .5);
+                    right: 50%;
                     height: var(--photo-size);
-                    left: 50%;
-                    margin: calc(var(--photo-size) * -.5) 0 0 calc(var(--photo-size) * -1);
+                    width: 0;
+                    margin: calc(var(--photo-size) * -.5) calc(var(--photo-size) * .5) 0 0;
+                    transition: width 0.2s;
                 }
+
+                :host([_player-ready]) .controlls {
+                    width: calc(var(--photo-size) * .5);
+                    transition: width 0.2s;
+                }
+
             }
 
             @media screen and (orientation: portrait) {
+
                 .controlls {
-                    height: calc(var(--photo-size) * .25);
+                    top: 50%;
                     width: var(--photo-size);
-                    bottom: 50%;
+                    height: 0;
                     left: 50%;
-                    margin: 0 0 calc(var(--photo-size) * -0.75) calc(var(--photo-size) * -.5);
+                    margin: calc(var(--photo-size) * .5) 0 0 calc(var(--photo-size) * -.5);
+                    transition: height 0.2s;
                 }
+
+                :host([_player-ready]) .controlls {
+                    height: calc(var(--photo-size) * .25);
+                    transition: height 0.2s;
+                }
+
             }
 
             /* Player */
@@ -146,6 +163,7 @@
                     class="player"
                     youtube-id="[[_youtubeId]]"
                     state="{{_state}}"
+                    on-player-ready="_onPlayerReady"
                 ></cm-player>
 
             </template>
@@ -181,6 +199,12 @@
                     _withPlayer: {
                         type: Boolean,
                         computed: '_computeWithPlayer(_youtubeId)',
+                        reflectToAttribute: true
+                    },
+
+                    _playerReady: {
+                        type: Boolean,
+                        value: false,
                         reflectToAttribute: true
                     }
 
@@ -248,6 +272,12 @@
 
             _onPause () {
                 this.pause();
+            }
+
+            _onPlayerReady () {
+                setTimeout(() => {
+                    this._playerReady = true;
+                }, 1000);
             }
 
 		}

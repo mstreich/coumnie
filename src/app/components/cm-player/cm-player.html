@@ -42,6 +42,7 @@
 
         <template is="dom-if" if="[[_showPlayer]]">
             <google-youtube
+                chromeless
                 id="player"
                 video-id="[[youtubeId]]"
                 height="0"
@@ -50,6 +51,7 @@
                 state="{{state}}"
                 duration="{{_duration}}"
                 currenttime="{{_currenttime}}"
+                on-playsupported-changed="_onPlaysupportedChanged"
             ></google-youtube>
         </template>
 
@@ -81,6 +83,11 @@
 
                     // PRIVATE
 
+                    _playsupported: {
+                        type: Boolean,
+                        value: true
+                    },
+
                     _duration: {
                         type: Number
                     },
@@ -107,14 +114,22 @@
             // PUBLIC
 
             play () {
-                this.shadowRoot.querySelector('#player').play();
+                this._getPlayer().play();
             }
 
             pause () {
-                this.shadowRoot.querySelector('#player').pause();
+                this._getPlayer().pause();
             }
 
             // PRIVATE
+
+            _getPlayer () {
+                return this.shadowRoot.querySelector('#player');
+            }
+
+            _playerReady () {
+                this.dispatchEvent(new CustomEvent('player-ready'));
+            }
 
             _computePercentage (_currenttime, _duration) {
                 return _currenttime / _duration * 100;
@@ -128,6 +143,36 @@
                 this.updateStyles({
                     '--width': _percentage + '%'
                 });
+            }
+
+            _onPlaysupportedChanged (e, data) {
+
+                if (data.value === true && this._playsupported) {
+                    this._playerReady();
+                }
+
+                if (data.value === false) {
+
+                    this._playsupported = false;
+
+                    var player = this._getPlayer();
+
+                    player.playsupported = true;
+
+                    setTimeout(() => {
+                        player.play();
+                    }, 1000);
+
+                    setTimeout(() => {
+                        player.pause();
+                    }, 2000);
+
+                    setTimeout(() => {
+                        this._playerReady();
+                    }, 2500);
+
+                }
+
             }
 
 		}
