@@ -20,14 +20,16 @@
                 color: var(--color);
                 background: var(--background);
                 cursor: pointer;
-                transition: color 0.2s, background 0.2s;
+                transition: all 0.2s;
 
             }
 
-            :host(:hover) {
-                color: var(--color-hover);
-                background: var(--background-hover);
-                transition: color 0.2s, background 0.2s;
+            @media (pointer: fine) {
+                :host(:hover) {
+                    color: var(--color-hover);
+                    background: var(--background-hover);
+                    transition: all 0.2s;
+                }
             }
 
             :host .button {
