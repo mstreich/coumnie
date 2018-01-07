@@ -1,0 +1,77 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="cm-gradient-background">
+
+	<template>
+
+		<style>
+
+            :host {
+
+                --gradient-angle: 135deg;
+                --gradient-opacity: 1;
+                --gradient-from: rgb(93, 159, 194);
+                --gradient-to: rgb(93, 159, 194);
+
+                position: relative;
+                overflow: hidden;
+
+            }
+
+            .background, .gradient {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+
+            .background {
+                -webkit-filter: grayscale(100%)  blur(4px);
+                filter: grayscale(100%) blur(4px);
+                transform: scale(1.05);
+                background-size: cover;
+                background-position: center center;
+            }
+
+            .gradient {
+                opacity: var(--gradient-opacity);
+                background: var(--gradient-from);
+                background: -moz-linear-gradient(-45deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+                background: -webkit-linear-gradient(-45deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+                background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+            }
+
+        </style>
+
+        <div class="background" style="background-image: url([[url]]);"></div>
+
+        <div class="gradient"></div>
+
+	</template>
+
+	<script>
+
+		class CmGradientBackground extends Polymer.Element {
+
+			static get is() { return 'cm-gradient-background'; }
+
+			static get properties () {
+
+				return {
+
+                    url: {
+                        type: String
+                    }
+
+				};
+
+            }
+
+		}
+		
+		customElements.define(CmGradientBackground.is, CmGradientBackground);
+
+	</script>
+
+</dom-module>

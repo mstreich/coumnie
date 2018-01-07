@@ -44,7 +44,7 @@
             <google-youtube
                 chromeless
                 id="player"
-                video-id="[[_youtubeId]]"
+                video-id="[[youtubeId]]"
                 height="0"
                 width="0"
                 start="0"
@@ -70,7 +70,7 @@
 
                     // PUBLIC
 
-                    youtubeUrl: {
+                    youtubeId: {
                         type: String
                     },
 
@@ -81,11 +81,6 @@
                     },
 
                     // PRIVATE
-
-                    _youtubeId: {
-                        type: String,
-                        computed: '_computeYoutubeId(youtubeUrl)'
-                    },
 
                     _duration: {
                         type: Number
@@ -103,7 +98,7 @@
 
                     _showPlayer: {
                         type: Boolean,
-                        computed: '_computeShowPlayer(_youtubeId)'
+                        computed: '_computeShowPlayer(youtubeId)'
                     }
 
 				};
@@ -122,18 +117,12 @@
 
             // PRIVATE
 
-            _computeYoutubeId (youtubeUrl) {
-                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-                var match = youtubeUrl.match(regExp);
-                return (match && match[7].length === 11) ? match[7] : null;
-            }
-
             _computePercentage (_currenttime, _duration) {
                 return _currenttime / _duration * 100;
             }
 
-            _computeShowPlayer (_youtubeId) {
-                return !!(_youtubeId && _youtubeId.length);
+            _computeShowPlayer (youtubeId) {
+                return !!(youtubeId && youtubeId.length);
             }
 
             _onPercentageChanged (_percentage) {

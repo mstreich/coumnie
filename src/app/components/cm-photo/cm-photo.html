@@ -1,7 +1,7 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../cm-player/cm-player.html">
 <link rel="import" href="../cm-player-controls/cm-player-controls.html">
+<link rel="import" href="../cm-gradient-background/cm-gradient-background.html">
 <script src="../../../../bower_components/color-thief/src/color-thief.js"></script>
 
 <dom-module id="cm-photo">
@@ -17,50 +17,42 @@
                 --player-size: 0px;
 
                 --gradient-angle: 135deg;
-                --color-1: rgba(93, 159, 194, 0.8);
-                --color-2: rgba(93, 159, 194, 0.8);
-                --color-3: rgba(93, 159, 194, 0.8);
-                --color-4: rgba(93, 159, 194, 0.8);
+                --gradient-opacity: 1;
+                --color-1: rgba(93, 159, 194);
+                --color-2: rgba(93, 159, 194);
+                --color-3: rgba(93, 159, 194);
+                --color-4: rgba(93, 159, 194);
 
                 position: relative;
                 overflow: hidden;
             }
 
-            /* Photo */
+            /* Background */
 
-            .background, .gradient, .photo {
+            .background {
                 position: absolute;
-                background-size: cover;
-                background-position: center center;
-            }
-
-            .background, .gradient {
                 top: 0;
                 right: 0;
                 bottom: 0;
                 left: 0;
+                --gradient-opacity: 0.95;
+                --gradient-angle: var(--gradient-angle);
+                --gradient-from: var(--color-1);
+                --gradient-to: var(--color-2);
             }
 
-            .background {
-                -webkit-filter: grayscale(100%)  blur(4px);
-                filter: grayscale(100%) blur(4px);
-                transform: scale(1.05);
-            }
-
-            .gradient {
-                background: var(--color-1);
-                background: -moz-linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
-                background: -webkit-linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
-                background: linear-gradient(var(--gradient-angle), var(--color-1) 0%, var(--color-2) 100%);
-            }
+            /* Photo */
 
             .photo {
+                position: absolute;
                 top: 50%;
                 width: var(--photo-size);
                 height: var(--photo-size);
                 left: 50%;
                 margin: calc(var(--photo-size) * -.5) 0px 0px calc(var(--photo-size) * -.5);
                 box-shadow: 0px 0px 25vh 5vh rgba(0, 0, 0, 0.5);
+                background-size: cover;
+                background-position: center center;
             }
 
             /* Colors */
@@ -126,21 +118,10 @@
             }
 
         </style>
-
-        <iron-ajax
-            id="getComments"
-            url="https://api.instagram.com/v1/media/[[photo.id]]/comments"
-            params='{"access_token":"7924113.7024836.afb88a9950b641c982694d41cd233183"}'
-            handle-as="json"
-            on-response="_onCommentsReceived"
-            debounce-duration="300"
-        ></iron-ajax>
         
         <template is="dom-if" if="[[photo.id]]">
 
-            <div class="background" style="background-image: url([[photo.images.standard_resolution.url]]);"></div>
-
-            <div class="gradient"></div>
+            <cm-gradient-background class="background" url="[[photo.images.standard_resolution.url]]"></cm-gradient-background>
 
             <div class="photo" style="background-image: url([[photo.images.standard_resolution.url]]);"></div>
 
@@ -163,7 +144,7 @@
                 <cm-player
                     id="player"
                     class="player"
-                    youtube-url="[[_youtubeUrl]]"
+                    youtube-id="[[_youtubeId]]"
                     state="{{_state}}"
                 ></cm-player>
 
@@ -189,7 +170,7 @@
                         observer: '_onPhoto'
                     },
 
-                    _youtubeUrl: {
+                    _youtubeId: {
                         type: String
                     },
 
@@ -199,7 +180,7 @@
 
                     _withPlayer: {
                         type: Boolean,
-                        computed: '_computeWithPlayer(_youtubeUrl)',
+                        computed: '_computeWithPlayer(_youtubeId)',
                         reflectToAttribute: true
                     }
 
@@ -230,9 +211,13 @@
                 img.onload = this._setColors.bind(this);
                 img.src = photo.images.standard_resolution.url;
 
-                if (photo.tags.includes('soundtrack')) {
-                    this.$.getComments.generateRequest();                    
-                }
+                var hashtags = photo.caption.text.match(/\B\#\w\w+\b/g);
+                hashtags.forEach(hashtag => {
+                    if (hashtag.startsWith('#soundtrack')) {
+                        this._youtubeId = hashtag.replace('#soundtrack', '');
+                        console.log('_youtubeId', this._youtubeId);
+                    }
+                });
 
             }
 
@@ -244,28 +229,17 @@
                 if (p && p.length > 3) {
                     this.updateStyles({
                         '--gradient-angle': Math.floor(Math.random() * 360) + 'deg',
-                        '--color-1': 'rgba(' + p[0][0] + ', ' + p[0][1] + ', ' + p[0][2] + ', 0.8)',
-                        '--color-2': 'rgba(' + p[1][0] + ', ' + p[1][1] + ', ' + p[1][2] + ', 0.8)',
-                        '--color-3': 'rgba(' + p[2][0] + ', ' + p[2][1] + ', ' + p[2][2] + ', 0.8)',
-                        '--color-4': 'rgba(' + p[3][0] + ', ' + p[3][1] + ', ' + p[3][2] + ', 0.8)'
+                        '--color-1': 'rgb(' + p[0][0] + ', ' + p[0][1] + ', ' + p[0][2] + ')',
+                        '--color-2': 'rgb(' + p[1][0] + ', ' + p[1][1] + ', ' + p[1][2] + ')',
+                        '--color-3': 'rgb(' + p[2][0] + ', ' + p[2][1] + ', ' + p[2][2] + ')',
+                        '--color-4': 'rgb(' + p[3][0] + ', ' + p[3][1] + ', ' + p[3][2] + ')'
                     });
                 }
 
             }
 
-            _onCommentsReceived (e, data) {
-                data.response.data.forEach(comment => {
-                    if (comment.from.id === '7924113') {
-                        var urls = comment.text.match(/(https?:\/\/[^\s]+)/g);
-                        if (urls && urls.length) {
-                            this._youtubeUrl = urls[0];
-                        }
-                    }
-				});
-            }
-
-            _computeWithPlayer (_youtubeUrl) {
-                return !!(_youtubeUrl && _youtubeUrl.length);
+            _computeWithPlayer (_youtubeId) {
+                return !!(_youtubeId && _youtubeId.length);
             }
 
             _onPlay () {
